@@ -1,6 +1,6 @@
 from typing import Union
 from aiogram import types
-from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
+from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton
 from states.number_state import get_num
 from keyboards.inline.menu_keyboards import (
     menu_cd,
@@ -15,9 +15,16 @@ from loader import dp, db
 # Bosh menyu matni uchun handler
 @dp.message_handler(text="🛍 Buyurtma berish")
 async def show_menu(message: types.Message):
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True,
+                                   keyboard=[
+                                       [
+                                           KeyboardButton(text="📱Telefon raqamni yuborish",
+                                                          request_contact=True)
+                                       ]
+                                   ])
     await message.reply("Telefon raqamingizni kiriting:\n"
                         "991234567\n"
-                        "<b>Eslatma: telefon raqamingizga parol yuboriladi </b>", reply_markup=ReplyKeyboardRemove())
+                        "<b>Eslatma: telefon raqamingizga parol yuboriladi </b>", reply_markup=keyboard)
     await get_num.Number.set()
 
 

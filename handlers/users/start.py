@@ -1,5 +1,6 @@
 import asyncpg
 from aiogram import types
+from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.builtin import CommandStart
 from keyboards.default.start_keyboard import menu
 
@@ -7,8 +8,10 @@ from loader import dp, db, bot
 from data.config import ADMINS
 
 
-@dp.message_handler(CommandStart())
-async def bot_start(message: types.Message):
+@dp.message_handler(CommandStart(), state='*')
+async def bot_start(message: types.Message, state: FSMContext):
+    if state:
+        await state.finish()
     try:
         user = await db.add_user(
             telegram_id=message.from_user.id,
@@ -24,6 +27,6 @@ async def bot_start(message: types.Message):
     )
 
     # ADMINGA xabar beramiz
-    # count = await db.count_users()
-    # msg = f"{user[1]} bazaga qo'shildi.\nBazada {count} ta foydalanuvchi bor."
-    # await bot.send_message(chat_id=ADMINS[0], text=msg)
+    count = await db.count_users()
+    msg = f"{user[1]} bazaga qo'shildi.\nBazada {count} ta foydalanuvchi bor."
+    await bot.send_message(chat_id=ADMINS[0], text=msg)
